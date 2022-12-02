@@ -1,30 +1,39 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_assert.h>
+#include <SDL2/SDL_blendmode.h>
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_ttf.h>
 
 #include <string>
+#include <vector>
 
 #include "headers/game_class.hpp"
 #include "headers/texture.hpp"
 
 int main(int argc, char const *argv[]) {
+
+  Game::init();
+  
   Game game;
+
+
+
+  game.gFont = TTF_OpenFont("assets/Minecraft.ttf", 28);
 
   SDL_Event e;
 
   bool isRunning = true;
 
-  LTexture gModTexture(game.gRenderer);
-  gModTexture.loadFromFile("assets/full.png");
+  std::vector<LTexture> textures;
 
-  Uint8 r = 255;
-  Uint8 g = 255;
-  Uint8 b = 255;
+  textures.push_back(LTexture(game.gRenderer));
 
-  Uint8 step = 32;
+  textures[0].loadFromRenderedText("Pykhiy was here uwu!", SDL_Color {0, 0, 0}, game.gFont);
+
   while (isRunning) {
     while (SDL_PollEvent(&e) != 0) {
       if (e.type == SDL_QUIT) {
@@ -33,32 +42,13 @@ int main(int argc, char const *argv[]) {
       }
       if (e.type == SDL_KEYDOWN) {
         switch (e.key.keysym.sym) {
-        case SDLK_q:
-          r += step;
-          break;
-        case SDLK_w:
-          g += step;
-          break;
-        case SDLK_e:
-          b += step;
-          break;
-        case SDLK_a:
-          r -= step;
-          break;
-        case SDLK_s:
-          g -= step;
-          break;
-        case SDLK_d:
-          b -= step;
-          break;
         }
       }
-
       SDL_SetRenderDrawColor(game.gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
       SDL_RenderClear(game.gRenderer);
 
-      gModTexture.setColor(r, g, b);
-      gModTexture.render(0, 0);
+      textures[0].render( ( SCREEN_WIDTH - textures[0].getWidth() ) / 2, ( SCREEN_HEIGHT - textures[0].getHeight() ) / 2 );
+
 
       SDL_RenderPresent(game.gRenderer);
     }
